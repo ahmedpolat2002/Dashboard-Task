@@ -26,7 +26,7 @@ export default function TotalBox({
         justifyContent: "space-between",
         alignItems: "center",
         gap: 2,
-        boxShadow: "1px 0px 7px rgba(0, 0, 0, 0.2)",
+        boxShadow: "1px 0px 20px rgba(0, 0, 0, 0.2)",
       }}
     >
       <Box>

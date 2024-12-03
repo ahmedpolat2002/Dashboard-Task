@@ -8,7 +8,8 @@ const SideBar = () => {
     <Box
       sx={{
         width: 250,
-        height: "500px",
+        // height: "500px",
+        height: "100%",
         background: "linear-gradient(3600deg, #FDF7F7 0%, #407BFF1A 100%)",
         boxShadow: "-14px 15px 13.1px rgba(0, 0, 0, 0.25)",
         borderRadius: "20px",
