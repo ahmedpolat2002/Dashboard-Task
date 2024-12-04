@@ -52,7 +52,7 @@ export default function ContentPage() {
         <Search
           onSearch={setSearchText}
           style={{ flex: 1 }}
-          placeholder="Find the store"
+          placeholder="Enter the Name"
         />
         <Filter />
         <Columns />
