@@ -1,19 +1,20 @@
-"use client";
-import {
-  Badge,
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import React, { useState } from "react";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { useState } from "react";
+import {
+  Button,
+  Popover,
+  TextField,
+  Select,
+  MenuItem,
+  Stack,
+  Typography,
+  Box,
+} from "@mui/material";
 
-export default function Filter() {
+export default function FilterComponent() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -21,35 +22,82 @@ export default function Filter() {
     setAnchorEl(null);
   };
 
+  const isOpen = Boolean(anchorEl);
+
   return (
-    <div>
-      <Box
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 10,
+    <Stack direction="row" alignItems="center" spacing={2}>
+      <Button
+        onClick={handleOpen}
+        startIcon={<FilterListIcon />}
+        sx={{
+          color: "black",
+          fontWeight: "bold",
+          fontSize: "18px",
+          textTransform: "capitalize",
         }}
       >
-        <IconButton onClick={handleClick}>
-          <FilterListIcon
-            sx={{
-              color: "black",
-            }}
-          />
-        </IconButton>
-        <Badge badgeContent={10} color="primary">
-          <Typography
-            style={{ fontWeight: "bold", fontSize: "18px", marginRight: "8px" }}
-          >
+        filter
+      </Button>
+
+      <Popover
+        open={isOpen}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+      >
+        <Box sx={{ padding: "16px", width: "400px" }}>
+          <Typography variant="h6" gutterBottom>
             Filter
           </Typography>
-        </Badge>
-      </Box>
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        <MenuItem onClick={handleClose}>Option 1</MenuItem>
-        <MenuItem onClick={handleClose}>Option 2</MenuItem>
-      </Menu>
-    </div>
+
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              marginBottom: "16px",
+            }}
+          >
+            <TextField
+              label="Input 1"
+              variant="outlined"
+              size="small"
+              fullWidth
+            />
+            <Select
+              defaultValue=""
+              size="small"
+              fullWidth
+              sx={{
+                "& fieldset": {
+                  borderRadius: "4px",
+                },
+              }}
+            >
+              <MenuItem value="">Select</MenuItem>
+              <MenuItem value="option1">Option 1</MenuItem>
+              <MenuItem value="option2">Option 2</MenuItem>
+            </Select>
+            <TextField
+              label="Input 2"
+              variant="outlined"
+              size="small"
+              fullWidth
+            />
+          </Stack>
+
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleClose}
+          >
+            Apply Filter
+          </Button>
+        </Box>
+      </Popover>
+    </Stack>
   );
 }

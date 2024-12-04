@@ -6,7 +6,7 @@ import Paper from "@mui/material/Paper";
 import { MenuItem, Pagination, Select, Stack, Typography } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 
-// البيانات:
+// Data:
 const rows = [
   { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
   { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
@@ -30,7 +30,6 @@ const rows = [
   { id: 20, lastName: "Ahmed", firstName: "Bolad", age: 23 },
 ];
 
-// تعريف الأعمدة:
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "firstName", headerName: "First name", width: 170 },
@@ -51,52 +50,60 @@ const columns: GridColDef[] = [
     // valueGetter: (params: {
     //   row: { firstName?: string; lastName?: string };
     // }) => {
-    //   // التحقق من وجود params.row
-    //   if (!params || !params.row) return "Unknown"; // قيمة افتراضية إذا كان الصف غير موجود
+    //   if (!params || !params.row) return "Unknown";
     //   const { firstName, lastName } = params.row;
     //   return ${firstName || ""} ${lastName || ""};
     // },
   },
 ];
 
-export default function DataTable() {
-  const [page, setPage] = React.useState(1); // الصفحة الحالية
-  const [pageSize, setPageSize] = React.useState(5); // عدد العناصر في الصفحة
+interface TableProps {
+  searchText: string;
+}
 
-  // دالة التغيير عند الت��قل بين الصفحات
+export default function DataTable({ searchText }: TableProps) {
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(5);
+
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
 
-  // دالة لتغيير عدد العناصر في الصفحة
   const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
-    setPageSize(Number(event.target.value)); // تحديث pageSize
-    setPage(1); // إعادة الصفحة إلى الأولى عند تغيير الحجم
+    setPageSize(Number(event.target.value));
+    setPage(1);
   };
 
-  // حساب عدد الصفحات
+  const filteredRows = rows.filter((row) =>
+    `${row.firstName || ""} ${row.lastName || ""}`
+      .toLowerCase()
+      .includes(searchText.toLowerCase())
+  );
+
   const count = Math.ceil(rows.length / pageSize);
 
-  // تقسيم البيانات بناءً على الصفحة الحالية
-  const displayedRows = rows.slice((page - 1) * pageSize, page * pageSize);
+  const displayedRows = filteredRows.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
 
   return (
     <Paper sx={{ height: 400, overflow: "hidden" }}>
       <DataGrid
-        rows={displayedRows} // البيانات المعروضة فقط للصفحة الحالية
+        rows={displayedRows}
         columns={columns}
         checkboxSelection
         pageSizeOptions={[pageSize]}
         sx={{
           border: 0,
           "& .MuiDataGrid-columnHeaders": {
-            color: "black", // لون النص
-            fontSize: "16px", // حجم الخط
-            backgroundColor: "#264A99 !important", // لون الخلفية مع أولوية
+            color: "black",
+            fontSize: "16px",
+            backgroundColor: "#264A99 !important",
           },
           "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#264A99", // لون الفوتر
-            color: "white", // لون النص
+            backgroundColor: "#264A99",
+            color: "white",
           },
         }}
         slots={{
@@ -113,7 +120,7 @@ export default function DataTable() {
               }}
             >
               <Typography variant="body1" color="inherit">
-                total recorde {page} / {count}
+                total record {page} / {count}
               </Typography>
               <Stack spacing={2}>
                 <Pagination
@@ -122,20 +129,19 @@ export default function DataTable() {
                   onChange={handleChange}
                   sx={{
                     "& .MuiPaginationItem-root": {
-                      color: "white", // لون الأرقام
+                      color: "white",
                     },
                     "& .MuiPaginationItem-root.Mui-selected": {
-                      backgroundColor: "#1E90FF", // لون خلفية للصفحة النشطة
-                      color: "white", // لون النص للصفحة النشطة
-                      fontWeight: "bold", // جعل النص عريضًا
+                      backgroundColor: "#1E90FF",
+                      color: "white",
+                      fontWeight: "bold",
                     },
                     "& .MuiPaginationItem-root:hover": {
-                      backgroundColor: "#1E90FF", // لون الخلفية عند التمرير
+                      backgroundColor: "#1E90FF",
                     },
                   }}
                 />
               </Stack>
-              {/* التحكم في عدد العناصر المعروضة */}
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="body2" style={{ marginRight: "10px" }}>
                   Rows per page:
@@ -144,8 +150,8 @@ export default function DataTable() {
                   value={pageSize}
                   onChange={handlePageSizeChange}
                   sx={{
-                    backgroundColor: "white", // لون الخلفية
-                    color: "#264A99", // لون النص
+                    backgroundColor: "white",
+                    color: "#264A99",
                     height: "30px",
                     fontSize: "14px",
                   }}

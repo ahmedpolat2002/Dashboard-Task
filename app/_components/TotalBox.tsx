@@ -5,13 +5,11 @@ export default function TotalBox({
   value,
   image,
   type,
-}: // children,
-{
+}: {
   title: string;
   value: string;
   image: string;
   type?: string;
-  // children: React.ReactNode;
 }) {
   return (
     <Box
