@@ -81,7 +81,7 @@ export default function ContentPage() {
         <Search
           onSearch={setSearchText}
           style={{ flex: 1 }}
-          placeholder="Enter the Name"
+          placeholder="Enter the Name , id and anyThing.."
         />
 
         <Filter onApplyFilter={handleFilterApply} />
