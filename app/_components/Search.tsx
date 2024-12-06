@@ -14,6 +14,7 @@ export default function Search({ onSearch, style, placeholder }: SearchProps) {
       id="outlined-basic"
       placeholder={placeholder}
       variant="outlined"
+      size="small"
       onChange={(e) => onSearch(e.target.value)}
       InputProps={{
         startAdornment: (

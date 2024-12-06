@@ -126,6 +126,8 @@ export default function DataTable({
       <DataGrid
         rows={displayedRows}
         columns={filteredColumns}
+        disableColumnFilter
+        disableColumnMenu
         checkboxSelection
         pageSizeOptions={[pageSize]}
         sx={{
