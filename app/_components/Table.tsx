@@ -5,6 +5,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import { MenuItem, Pagination, Select, Stack, Typography } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
+import { Filters } from "@/app/_types/FilterTypes";
 
 // Data:
 const rows = [
@@ -30,16 +31,11 @@ const rows = [
   { id: 20, lastName: "Ahmed", firstName: "Bolad", age: 23 },
 ];
 
-const columns: GridColDef[] = [
+const initialColumns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "firstName", headerName: "First name", width: 170 },
   { field: "lastName", headerName: "Last name", width: 170 },
-  {
-    field: "age",
-    headerName: "Age",
-    type: "number",
-    width: 90,
-  },
+  { field: "age", headerName: "Age", type: "number", width: 90 },
   {
     field: "fullName",
     headerName: "Full name",
@@ -59,9 +55,15 @@ const columns: GridColDef[] = [
 
 interface TableProps {
   searchText: string;
+  visibleColumns: string[];
+  filters: Filters;
 }
 
-export default function DataTable({ searchText }: TableProps) {
+export default function DataTable({
+  searchText,
+  visibleColumns,
+  filters,
+}: TableProps) {
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(5);
 
@@ -74,11 +76,43 @@ export default function DataTable({ searchText }: TableProps) {
     setPage(1);
   };
 
-  const filteredRows = rows.filter((row) =>
-    `${row.firstName || ""} ${row.lastName || ""}`
-      .toLowerCase()
-      .includes(searchText.toLowerCase())
+  const filteredColumns = initialColumns.filter((col) =>
+    visibleColumns.includes(col.field)
   );
+
+  // const filteredRows = rows.filter((row) =>
+  //   Object.values(row).some(
+  //     (value) =>
+  //       value &&
+  //       value.toString().toLowerCase().includes(searchText.toLowerCase())
+  //   )
+  // );
+  const filteredRows = rows.filter((row) => {
+    if (filters.column && filters.operator && filters.value) {
+      let columnValue = "";
+      if (filters.column === "fullName") {
+        columnValue = `${row.firstName || ""} ${
+          row.lastName || ""
+        }`.toLowerCase();
+      } else {
+        columnValue = (row[filters.column]?.toString() || "").toLowerCase();
+      }
+      const filterValue = filters.value.toLowerCase();
+
+      if (filters.operator === "equals") {
+        return columnValue === filterValue;
+      } else if (filters.operator === "contains") {
+        return columnValue.includes(filterValue);
+      }
+    } else if (searchText) {
+      return Object.values(row).some(
+        (value) =>
+          value &&
+          value.toString().toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+    return true;
+  });
 
   const count = Math.ceil(rows.length / pageSize);
 
@@ -91,7 +125,7 @@ export default function DataTable({ searchText }: TableProps) {
     <Paper sx={{ height: 400, overflow: "hidden" }}>
       <DataGrid
         rows={displayedRows}
-        columns={columns}
+        columns={filteredColumns}
         checkboxSelection
         pageSizeOptions={[pageSize]}
         sx={{
@@ -120,7 +154,7 @@ export default function DataTable({ searchText }: TableProps) {
               }}
             >
               <Typography variant="body1" color="inherit">
-                total record {page} / {count}
+                total record : {rows.length}
               </Typography>
               <Stack spacing={2}>
                 <Pagination

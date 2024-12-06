@@ -6,10 +6,37 @@ import Search from "../_components/Search";
 import Filter from "../_components/Filter";
 import Table from "../_components/Table";
 import Columns from "./Columns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Filters } from "@/app/_types/FilterTypes";
 
 export default function ContentPage() {
   const [searchText, setSearchText] = useState("");
+  const [visibleColumns, setVisibleColumns] = useState<string[]>([
+    "id",
+    "firstName",
+    "lastName",
+    "age",
+    "fullName",
+  ]);
+  const [filters, setFilters] = useState<Filters>({
+    column: undefined,
+    operator: "equals",
+    value: "",
+  });
+
+  useEffect(() => {
+    if (searchText) {
+      setFilters({
+        column: undefined,
+        operator: "equals",
+        value: "",
+      });
+    }
+  }, [searchText]);
+
+  const handleFilterApply = (newFilters: Filters) => {
+    setFilters(newFilters);
+  };
 
   return (
     <Box style={{ display: "flex", flexDirection: "column" }}>
@@ -17,8 +44,9 @@ export default function ContentPage() {
         style={{
           display: "flex",
           flexDirection: "row",
-          justifyContent: "space-between",
           alignItems: "center",
+          gap: "6px",
+          flexWrap: "wrap",
         }}
       >
         <TotalBox
@@ -45,6 +73,7 @@ export default function ContentPage() {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
+          flexWrap: "wrap",
           marginTop: "12px",
           gap: "12px",
         }}
@@ -54,11 +83,20 @@ export default function ContentPage() {
           style={{ flex: 1 }}
           placeholder="Enter the Name"
         />
-        <Filter />
-        <Columns />
+
+        <Filter onApplyFilter={handleFilterApply} />
+
+        <Columns
+          visibleColumns={visibleColumns}
+          setVisibleColumns={setVisibleColumns}
+        />
       </Box>
       <Box style={{ marginTop: "12px" }}>
-        <Table searchText={searchText} />
+        <Table
+          searchText={searchText}
+          visibleColumns={visibleColumns}
+          filters={filters}
+        />
       </Box>
     </Box>
   );

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ColumnSelectIcon from "@mui/icons-material/ViewColumn";
 import {
   MenuItem,
   Select,
@@ -13,17 +12,26 @@ import {
   ListItemText,
   FormControlLabel,
 } from "@mui/material";
+import ColumnSelectIcon from "@mui/icons-material/ViewColumn";
 
 const options = [
-  { id: 1, label: "ID" },
-  { id: 2, label: "Column 2" },
-  { id: 3, label: "Column 3" },
-  { id: 4, label: "Column 4" },
+  { field: "id", label: "ID" },
+  { field: "firstName", label: "First name" },
+  { field: "lastName", label: "Last name" },
+  { field: "age", label: "Age" },
+  { field: "fullName", label: "Full name" },
 ];
 
-export default function Columns() {
+interface ColumnsProps {
+  visibleColumns: string[];
+  setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+export default function Columns({
+  visibleColumns,
+  setVisibleColumns,
+}: ColumnsProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [checkedOptions, setCheckedOptions] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleOpen = (event: React.SyntheticEvent<Element, Event>) => {
@@ -40,20 +48,19 @@ export default function Columns() {
     option.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleCheck = (id: number) => {
-    setCheckedOptions((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+  const handleCheck = (field: string) => {
+    setVisibleColumns((prev) =>
+      prev.includes(field)
+        ? prev.filter((col) => col !== field)
+        : [...prev, field]
     );
   };
 
   return (
     <Stack
       direction="row"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-      }}
       spacing={1}
+      sx={{ display: "flex", alignItems: "center" }}
     >
       <InputAdornment position="start" sx={{ color: "black" }}>
         <ColumnSelectIcon />
@@ -83,13 +90,7 @@ export default function Columns() {
           horizontal: "left",
         }}
       >
-        <Stack
-          spacing={2}
-          sx={{
-            padding: "16px",
-            width: "300px",
-          }}
-        >
+        <Stack spacing={2} sx={{ padding: "16px", width: "300px" }}>
           <TextField
             placeholder="Search columns..."
             value={searchTerm}
@@ -97,30 +98,15 @@ export default function Columns() {
             variant="outlined"
             size="small"
           />
-
           <List>
             {filteredOptions.map((option) => (
-              <ListItem key={option.id}>
+              <ListItem key={option.field}>
                 <FormControlLabel
-                  style={{
-                    backgroundColor: "#008CFF",
-                    borderRadius: "5px",
-                    padding: "5px 10px",
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    flexDirection: "row-reverse",
-                  }}
-                  label={
-                    <ListItemText
-                      style={{ fontWeight: "bold", color: "white" }}
-                      primary={option.label}
-                    />
-                  }
+                  label={<ListItemText primary={option.label} />}
                   control={
                     <Checkbox
-                      checked={checkedOptions.includes(option.id)}
-                      onChange={() => handleCheck(option.id)}
+                      checked={visibleColumns.includes(option.field)}
+                      onChange={() => handleCheck(option.field)}
                     />
                   }
                 />

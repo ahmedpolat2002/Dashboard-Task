@@ -10,9 +10,27 @@ import {
   Typography,
   Box,
 } from "@mui/material";
+import { Filters } from "@/app/_types/FilterTypes";
 
-export default function FilterComponent() {
+interface FilterProps {
+  onApplyFilter: (filters: Filters) => void;
+}
+
+const fieldMapping: { [key: string]: string } = {
+  "first name": "firstName",
+  "last name": "lastName",
+  "full name": "fullName",
+  id: "id",
+  age: "age",
+};
+
+export default function Filter({ onApplyFilter }: FilterProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [column, setColumn] = useState<
+    "id" | "firstName" | "lastName" | "age" | "fullName" | undefined
+  >(undefined);
+  const [operator, setOperator] = useState<"equals" | "contains">("equals");
+  const [value, setValue] = useState("");
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -23,6 +41,23 @@ export default function FilterComponent() {
   };
 
   const isOpen = Boolean(anchorEl);
+
+  const handleApplyFilter = () => {
+    onApplyFilter({ column, operator, value });
+    handleClose();
+  };
+
+  const handleColumnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value.toLowerCase(); // تحويل النص المدخل إلى lowercase لتسهيل المطابقة
+    const matchedColumn = fieldMapping[input]; // البحث عن القيمة في القاموس
+    if (matchedColumn) {
+      setColumn(
+        matchedColumn as "id" | "firstName" | "lastName" | "age" | "fullName"
+      );
+    } else {
+      setColumn(undefined); // إذا لم يكن هناك تطابق
+    }
+  };
 
   return (
     <Stack direction="row" alignItems="center" spacing={2}>
@@ -36,7 +71,7 @@ export default function FilterComponent() {
           textTransform: "capitalize",
         }}
       >
-        filter
+        Filter
       </Button>
 
       <Popover
@@ -53,38 +88,37 @@ export default function FilterComponent() {
             Filter
           </Typography>
 
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              marginBottom: "16px",
-            }}
-          >
+          <Stack direction="row" spacing={2} sx={{ marginBottom: "16px" }}>
             <TextField
-              label="Input 1"
+              label="Field Name"
               variant="outlined"
               size="small"
               fullWidth
+              onChange={handleColumnChange}
             />
             <Select
-              defaultValue=""
+              value={operator}
               size="small"
               fullWidth
+              onChange={(e) =>
+                setOperator(e.target.value as "equals" | "contains")
+              }
               sx={{
                 "& fieldset": {
                   borderRadius: "4px",
                 },
               }}
             >
-              <MenuItem value="">Select</MenuItem>
-              <MenuItem value="option1">Option 1</MenuItem>
-              <MenuItem value="option2">Option 2</MenuItem>
+              <MenuItem value="">Select Operator</MenuItem>
+              <MenuItem value="equals">Equals</MenuItem>
+              <MenuItem value="contains">Contains</MenuItem>
             </Select>
             <TextField
-              label="Input 2"
+              label="Value"
               variant="outlined"
               size="small"
               fullWidth
+              onChange={(e) => setValue(e.target.value)}
             />
           </Stack>
 
@@ -92,7 +126,7 @@ export default function FilterComponent() {
             variant="contained"
             color="primary"
             fullWidth
-            onClick={handleClose}
+            onClick={handleApplyFilter}
           >
             Apply Filter
           </Button>

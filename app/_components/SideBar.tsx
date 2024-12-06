@@ -1,13 +1,31 @@
-import React from "react";
-import { Box, List, ListItem, ListItemText, MenuItem } from "@mui/material";
+"use client";
+
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import Link from "next/link";
-import Select from "./Select";
 
 const SideBar = () => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   return (
     <Box
       sx={{
-        width: 250,
+        // width: 250,
         // height: "500px",
         height: "100%",
         background: "linear-gradient(3600deg, #FDF7F7 0%, #407BFF1A 100%)",
@@ -34,67 +52,83 @@ const SideBar = () => {
           />
         </ListItem>
       </List>
-      <Select
-        text="Companies"
-        style={{
-          width: "175px",
-          bgColor: "#407BFF",
-          borderRadius: "12px",
-          textAlign: "center",
-          height: "40px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          px: 3,
-        }}
-      >
-        <MenuItem value={"Companies"}>Companies</MenuItem>
-      </Select>
-      {/* Nested Pages */}
-      <List
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          mt: 2,
-          alignItems: "end",
-          width: "60%",
-        }}
-      >
-        <ListItem
-          component={Link}
-          style={{ padding: "0px", width: "100%" }}
-          href="/dashboard/companies"
+      <Box>
+        {/* Button to open menu */}
+        <Button
+          onClick={handleOpen}
+          sx={{
+            width: "175px",
+            backgroundColor: "#407BFF",
+            borderRadius: "12px",
+            textAlign: "center",
+            height: "40px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            "&:hover": {
+              backgroundColor: "#3568D4",
+            },
+          }}
         >
-          <ListItemText
-            primary="All Companies"
+          Companies
+        </Button>
+
+        {/* Dropdown Menu */}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          PaperProps={{
+            sx: {
+              mt: 1,
+              borderRadius: "12px",
+              width: "175px",
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              padding: "10px",
+            },
+          }}
+        >
+          <MenuItem
+            component={Link}
+            href="/dashboard/companies"
+            onClick={handleClose}
             sx={{
-              color: "black",
               bgcolor: "#407BFF",
+              color: "white",
               borderRadius: "12px",
               textAlign: "center",
               px: 2,
               py: 1,
+              mb: 1,
+              "&:hover": {
+                backgroundColor: "#3568D4",
+              },
             }}
-          />
-        </ListItem>
-        <ListItem
-          component={Link}
-          style={{ padding: "0px", width: "100%" }}
-          href="/dashboard/branches"
-        >
-          <ListItemText
-            primary="All Branches"
+          >
+            <ListItemText primary="All Companies" />
+          </MenuItem>
+          <MenuItem
+            component={Link}
+            href="/dashboard/branches"
+            onClick={handleClose}
             sx={{
-              color: "black",
               bgcolor: "#407BFF4A",
+              color: "black",
               borderRadius: "12px",
               textAlign: "center",
               px: 2,
               py: 1,
+              "&:hover": {
+                backgroundColor: "#3568D4",
+                color: "white",
+              },
             }}
-          />
-        </ListItem>
-      </List>
+          >
+            <ListItemText primary="All Branches" />
+          </MenuItem>
+        </Menu>
+      </Box>
     </Box>
   );
 };
